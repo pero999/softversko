@@ -1,0 +1,17 @@
+# Web Framework
+fastapi>=0.135.0
+uvicorn>=0.41.0
+
+# Data Validation
+pydantic>=2.12.0
+
+# Database ORM
+sqlmodel>=0.0.37
+sqlalchemy>=2.0.0
+
+# Testing
+pytest>=9.0.0
+
+# Linting & Formatting
+ruff>=0.15.0
+black>=26.0.0

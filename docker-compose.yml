@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    container_name: fastapi-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./data:/app/data  # SQLite database persistence
+    environment:
+      - DATABASE_URL=sqlite:///./data/database.db
+    restart: unless-stopped
+
+  # Optional: za development s auto-reload
+  api-dev:
+    build: .
+    container_name: fastapi-app-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/database.db
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    profiles:
+      - dev
