@@ -20,7 +20,7 @@
             <a href="#menu" class="nav-link" data-section="admin-menu">Jelovnik</a>
         </div>
         <div class="nav-user">
-            <a href="index.html" class="btn btn-outline">← Korisničko sučelje</a>
+            <a href="/" class="btn btn-outline">← Korisničko sučelje</a>
             <button class="btn btn-outline" onclick="logout()">Odjava</button>
         </div>
         
@@ -37,7 +37,7 @@
         <a href="#orders" class="nav-link" data-section="admin-orders">Narudžbe</a>
         <a href="#menu" class="nav-link" data-section="admin-menu">Jelovnik</a>
         <div class="nav-auth">
-            <a href="index.html" class="btn btn-outline">← Korisničko sučelje</a>
+            <a href="/" class="btn btn-outline">← Korisničko sučelje</a>
             <button class="btn btn-outline" onclick="logout()">Odjava</button>
         </div>
     </div>
@@ -128,7 +128,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const user = JSON.parse(localStorage.getItem('user'));
             if (!user || user.role !== 'admin') {
-                window.location.href = 'index.html';
+                window.location.href = '/';
                 return;
             }
             initAdminPage();

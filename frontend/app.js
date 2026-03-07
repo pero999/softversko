@@ -274,7 +274,7 @@ function logout() {
     
     // Redirect to home if on admin page
     if (window.location.pathname.includes('admin')) {
-        window.location.href = 'index.html';
+        window.location.href = '/';
     }
 }
 
