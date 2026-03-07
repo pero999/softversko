@@ -1,6 +1,7 @@
-"""User model."""
+"""User model s ulogama."""
 
 from datetime import UTC, datetime
+from enum import Enum
 from typing import Optional
 
 from sqlmodel import Field, SQLModel
@@ -11,6 +12,13 @@ def utc_now() -> datetime:
     return datetime.now(UTC)
 
 
+class UserRole(str, Enum):
+    """Korisničke uloge."""
+
+    USER = "user"
+    ADMIN = "admin"
+
+
 class UserBase(SQLModel):
     """Bazni User model."""
 
@@ -18,34 +26,47 @@ class UserBase(SQLModel):
     email: str = Field(index=True, unique=True)
     full_name: Optional[str] = Field(default=None, max_length=100)
     is_active: bool = Field(default=True)
+    role: UserRole = Field(default=UserRole.USER)
 
 
 class User(UserBase, table=True):
     """User database model."""
 
     id: Optional[int] = Field(default=None, primary_key=True)
+    hashed_password: str = Field()
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
 
 
-class UserCreate(UserBase):
+class UserCreate(SQLModel):
     """Model za kreiranje usera."""
 
-    pass
+    username: str = Field(min_length=3, max_length=50)
+    email: str
+    password: str = Field(min_length=6)
+    full_name: Optional[str] = None
 
 
-class UserUpdate(SQLModel):
-    """Model za update usera."""
-
-    username: Optional[str] = Field(default=None, min_length=3, max_length=50)
-    email: Optional[str] = None
-    full_name: Optional[str] = Field(default=None, max_length=100)
-    is_active: Optional[bool] = None
-
-
-class UserRead(UserBase):
+class UserRead(SQLModel):
     """Model za čitanje usera."""
 
     id: int
+    username: str
+    email: str
+    full_name: Optional[str]
+    is_active: bool
+    role: UserRole
     created_at: datetime
-    updated_at: datetime
+
+
+class Token(SQLModel):
+    """JWT Token model."""
+
+    access_token: str
+    token_type: str = "bearer"
+
+
+class TokenData(SQLModel):
+    """Token payload data."""
+
+    username: Optional[str] = None

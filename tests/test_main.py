@@ -1,156 +1,110 @@
-"""Testovi za main API."""
+"""Osnovni testovi za API."""
 
-import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
-from sqlmodel.pool import StaticPool
-
-from app.database import get_session
-from main import app
 
 
-# Test database setup
-@pytest.fixture(name="session")
-def session_fixture():
-    """Kreiraj test database session."""
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
+class TestHealthCheck:
+    """Testovi za health check i root endpoint."""
+
+    def test_root_endpoint(self, client: TestClient):
+        """Test root endpointa."""
+        response = client.get("/")
+        assert response.status_code == 200
+        data = response.json()
+        assert "message" in data
+        assert "docs" in data
+        assert "Menza" in data["message"]
+
+    def test_health_check(self, client: TestClient):
+        """Test health check endpointa."""
+        response = client.get("/health")
+        assert response.status_code == 200
+        assert response.json() == {"status": "healthy"}
 
 
-@pytest.fixture(name="client")
-def client_fixture(session: Session):
-    """Kreiraj test client s test database."""
+class TestMenuPublicAccess:
+    """Testovi za javni pristup jelovniku."""
 
-    def get_session_override():
-        return session
+    def test_get_menu_public(self, client: TestClient, test_menu_item):
+        """Test da se jelovnik može dohvatiti bez autentikacije."""
+        response = client.get("/api/v1/menu/")
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
 
-    app.dependency_overrides[get_session] = get_session_override
-    client = TestClient(app)
-    yield client
-    app.dependency_overrides.clear()
+    def test_get_single_item_public(self, client: TestClient, test_menu_item):
+        """Test da se pojedini artikl može dohvatiti bez autentikacije."""
+        response = client.get(f"/api/v1/menu/{test_menu_item.id}")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == test_menu_item.name
 
-
-def test_root(client: TestClient):
-    """Test root endpointa."""
-    response = client.get("/")
-    assert response.status_code == 200
-    data = response.json()
-    assert "message" in data
-    assert "docs" in data
-
-
-def test_health_check(client: TestClient):
-    """Test health check endpointa."""
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert response.json() == {"status": "healthy"}
-
-
-def test_create_user(client: TestClient):
-    """Test kreiranja usera."""
-    response = client.post(
-        "/api/v1/users/",
-        json={
-            "username": "testuser",
-            "email": "test@example.com",
-            "full_name": "Test User",
-        },
-    )
-    assert response.status_code == 201
-    data = response.json()
-    assert data["username"] == "testuser"
-    assert data["email"] == "test@example.com"
-    assert "id" in data
+    def test_filter_available_items(
+        self, client: TestClient, test_menu_item, unavailable_menu_item
+    ):
+        """Test filtriranja samo dostupnih artikala."""
+        response = client.get("/api/v1/menu/?available_only=true")
+        assert response.status_code == 200
+        data = response.json()
+        item_ids = [item["id"] for item in data]
+        assert test_menu_item.id in item_ids
+        assert unavailable_menu_item.id not in item_ids
 
 
-def test_create_user_duplicate_username(client: TestClient):
-    """Test da dupli username vraća error."""
-    # Kreiraj prvog usera
-    client.post(
-        "/api/v1/users/",
-        json={"username": "duplicate", "email": "first@example.com"},
-    )
-    # Pokušaj kreirati drugog s istim username
-    response = client.post(
-        "/api/v1/users/",
-        json={"username": "duplicate", "email": "second@example.com"},
-    )
-    assert response.status_code == 400
+class TestAuthEndpoints:
+    """Testovi za auth endpointe."""
 
+    def test_register_user(self, client: TestClient):
+        """Test registracije korisnika."""
+        response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "username": "novikorisnik",
+                "email": "novi@example.com",
+                "password": "lozinka123",
+            },
+        )
+        assert response.status_code == 201
+        data = response.json()
+        assert data["username"] == "novikorisnik"
+        assert data["role"] == "user"
 
-def test_read_users(client: TestClient):
-    """Test dohvata svih usera."""
-    # Kreiraj usera
-    client.post(
-        "/api/v1/users/",
-        json={"username": "user1", "email": "user1@example.com"},
-    )
-    # Dohvati sve
-    response = client.get("/api/v1/users/")
-    assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data, list)
-    assert len(data) >= 1
+    def test_register_duplicate_username(self, client: TestClient, test_user):
+        """Test da dupli username vraća grešku."""
+        response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "username": test_user.username,
+                "email": "drugi@example.com",
+                "password": "lozinka123",
+            },
+        )
+        assert response.status_code == 400
+        assert "već postoji" in response.json()["detail"]
 
+    def test_login_success(self, client: TestClient, test_user):
+        """Test uspješnog logina."""
+        response = client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.username, "password": "testpass123"},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "access_token" in data
 
-def test_read_user(client: TestClient):
-    """Test dohvata jednog usera."""
-    # Kreiraj usera
-    create_response = client.post(
-        "/api/v1/users/",
-        json={"username": "singleuser", "email": "single@example.com"},
-    )
-    user_id = create_response.json()["id"]
+    def test_login_wrong_password(self, client: TestClient, test_user):
+        """Test logina s pogrešnom lozinkom."""
+        response = client.post(
+            "/api/v1/auth/login",
+            data={"username": test_user.username, "password": "wrongpass"},
+        )
+        assert response.status_code == 401
 
-    # Dohvati po ID-u
-    response = client.get(f"/api/v1/users/{user_id}")
-    assert response.status_code == 200
-    assert response.json()["username"] == "singleuser"
-
-
-def test_read_user_not_found(client: TestClient):
-    """Test da nepostojeći user vraća 404."""
-    response = client.get("/api/v1/users/99999")
-    assert response.status_code == 404
-
-
-def test_update_user(client: TestClient):
-    """Test ažuriranja usera."""
-    # Kreiraj usera
-    create_response = client.post(
-        "/api/v1/users/",
-        json={"username": "updateme", "email": "update@example.com"},
-    )
-    user_id = create_response.json()["id"]
-
-    # Ažuriraj
-    response = client.patch(
-        f"/api/v1/users/{user_id}",
-        json={"full_name": "Updated Name"},
-    )
-    assert response.status_code == 200
-    assert response.json()["full_name"] == "Updated Name"
-
-
-def test_delete_user(client: TestClient):
-    """Test brisanja usera."""
-    # Kreiraj usera
-    create_response = client.post(
-        "/api/v1/users/",
-        json={"username": "deleteme", "email": "delete@example.com"},
-    )
-    user_id = create_response.json()["id"]
-
-    # Obriši
-    response = client.delete(f"/api/v1/users/{user_id}")
-    assert response.status_code == 204
-
-    # Provjeri da ne postoji
-    response = client.get(f"/api/v1/users/{user_id}")
-    assert response.status_code == 404
+    def test_get_me(self, client: TestClient, test_user, user_token):
+        """Test dohvaćanja trenutnog korisnika."""
+        response = client.get(
+            "/api/v1/auth/me",
+            headers={"Authorization": f"Bearer {user_token}"},
+        )
+        assert response.status_code == 200
+        assert response.json()["username"] == test_user.username
