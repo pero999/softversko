@@ -1,1 +1,1 @@
-print ("diste ekipa")
+print("diste ekipa")
