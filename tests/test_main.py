@@ -4,11 +4,11 @@ from fastapi.testclient import TestClient
 
 
 class TestHealthCheck:
-    """Testovi za health check i root endpoint."""
+    """Testovi za health check i API info endpoint."""
 
-    def test_root_endpoint(self, client: TestClient):
-        """Test root endpointa."""
-        response = client.get("/")
+    def test_api_info_endpoint(self, client: TestClient):
+        """Test API info endpointa."""
+        response = client.get("/api")
         assert response.status_code == 200
         data = response.json()
         assert "message" in data

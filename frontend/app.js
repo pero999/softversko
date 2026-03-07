@@ -2,7 +2,10 @@
 // MENZA - Frontend Application
 // ============================================
 
-const API_URL = 'https://menza-api.onrender.com/api/v1';
+// API URL - koristi relativan path kad je na istom originu
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://127.0.0.1:8000/api/v1'
+    : '/api/v1';
 
 // State
 let cart = [];
