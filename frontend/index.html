@@ -3,156 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menza - Naruci Online</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Menza - Sustav Narudžbi</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-brand">
-            <span class="brand-icon">🍽️</span>
+            <span class="logo">🍽️</span>
             <span class="brand-text">Menza</span>
         </div>
         <div class="nav-links">
             <a href="#menu" class="nav-link active" data-section="menu">Jelovnik</a>
             <a href="#orders" class="nav-link" data-section="orders">Moje Narudžbe</a>
             <a href="#cart" class="nav-link cart-link" data-section="cart">
-                🛒 Košarica (<span id="cart-count">0</span>)
+                Košarica <span class="cart-count">0</span>
             </a>
         </div>
-        <div class="nav-auth" id="nav-auth">
-            <button class="btn btn-outline" onclick="showLogin()">Prijava</button>
-            <button class="btn btn-primary" onclick="showRegister()">Registracija</button>
+        <div class="nav-auth">
+            <button id="loginBtn" class="btn btn-outline">Prijava</button>
+            <button id="logoutBtn" class="btn btn-outline hidden">Odjava</button>
+            <span id="userInfo" class="user-info hidden"></span>
+            <a href="admin.html" id="adminLink" class="btn btn-primary hidden">Admin Panel</a>
         </div>
-        <div class="nav-user" id="nav-user" style="display: none;">
-            <span class="user-greeting">Bok, <span id="user-name"></span>!</span>
-            <a href="admin.html" id="admin-link" class="btn btn-admin" style="display: none;">Admin Panel</a>
-            <button class="btn btn-outline" onclick="logout()">Odjava</button>
+        
+        <!-- Hamburger Menu -->
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
     </nav>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#menu" class="nav-link" data-section="menu">Jelovnik</a>
+        <a href="#orders" class="nav-link" data-section="orders">Moje Narudžbe</a>
+        <a href="#cart" class="nav-link cart-link" data-section="cart">
+            Košarica <span class="cart-count mobile-cart-count">0</span>
+        </a>
+        <div class="nav-auth">
+            <button id="mobileLoginBtn" class="btn btn-outline">Prijava</button>
+            <button id="mobileLogoutBtn" class="btn btn-outline hidden">Odjava</button>
+            <a href="admin.html" id="mobileAdminLink" class="btn btn-primary hidden">Admin Panel</a>
+        </div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <main class="container">
         <!-- Menu Section -->
-        <section id="menu-section" class="section active">
+        <section id="menu" class="section active">
             <div class="section-header">
-                <h1>Današnji Jelovnik</h1>
-                <p>Odaberi svoja omiljena jela i naruči unaprijed</p>
+                <h1>Jelovnik</h1>
+                <p class="subtitle">Odaberite svoja omiljena jela</p>
             </div>
             
-            <div class="category-filters" id="category-filters">
+            <div class="category-filters">
                 <button class="filter-btn active" data-category="all">Sve</button>
+                <button class="filter-btn" data-category="glavno_jelo">Glavna Jela</button>
+                <button class="filter-btn" data-category="prilog">Prilozi</button>
+                <button class="filter-btn" data-category="juha">Juhe</button>
+                <button class="filter-btn" data-category="desert">Deserti</button>
+                <button class="filter-btn" data-category="piće">Pića</button>
             </div>
-
-            <div class="menu-grid" id="menu-grid">
+            
+            <div id="menuGrid" class="menu-grid">
                 <!-- Menu items loaded dynamically -->
             </div>
         </section>
 
-        <!-- Cart Section -->
-        <section id="cart-section" class="section">
+        <!-- Orders Section -->
+        <section id="orders" class="section">
             <div class="section-header">
-                <h1>🛒 Tvoja Košarica</h1>
+                <h1>Moje Narudžbe</h1>
+                <p class="subtitle">Pregled vaših narudžbi</p>
+            </div>
+            
+            <div id="ordersContainer" class="orders-container">
+                <p class="login-prompt">Prijavite se za pregled narudžbi</p>
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart" class="section">
+            <div class="section-header">
+                <h1>Košarica</h1>
+                <p class="subtitle">Pregledajte i naručite</p>
             </div>
             
             <div class="cart-container">
-                <div class="cart-items" id="cart-items">
+                <div id="cartItems" class="cart-items">
                     <p class="empty-cart">Košarica je prazna</p>
                 </div>
                 
-                <div class="cart-summary" id="cart-summary" style="display: none;">
+                <div class="cart-summary">
                     <div class="summary-row">
                         <span>Ukupno:</span>
-                        <span class="total-price" id="total-price">0.00 €</span>
+                        <span id="cartTotal" class="total-price">0.00 €</span>
                     </div>
                     
                     <div class="pickup-time">
-                        <label for="pickup-time">Vrijeme preuzimanja:</label>
-                        <input type="datetime-local" id="pickup-time" required>
+                        <label for="pickupTime">Vrijeme preuzimanja:</label>
+                        <input type="datetime-local" id="pickupTime" required>
                     </div>
                     
-                    <div class="order-note">
-                        <label for="order-note">Napomena (opcionalno):</label>
-                        <textarea id="order-note" placeholder="Npr. bez luka, extra umak..."></textarea>
-                    </div>
-                    
-                    <button class="btn btn-primary btn-large" onclick="submitOrder()" id="submit-order-btn">
+                    <button id="orderBtn" class="btn btn-primary btn-large" disabled>
                         Naruči
                     </button>
                 </div>
             </div>
         </section>
-
-        <!-- Orders Section -->
-        <section id="orders-section" class="section">
-            <div class="section-header">
-                <h1>📋 Moje Narudžbe</h1>
-            </div>
-            
-            <div class="orders-list" id="orders-list">
-                <p class="login-prompt">Prijavi se za pregled narudžbi</p>
-            </div>
-        </section>
     </main>
 
     <!-- Login Modal -->
-    <div class="modal" id="login-modal">
+    <div id="loginModal" class="modal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('login-modal')">&times;</span>
+            <span class="close">&times;</span>
             <h2>Prijava</h2>
-            <form id="login-form" onsubmit="handleLogin(event)">
+            <form id="loginForm">
                 <div class="form-group">
-                    <label for="login-username">Korisničko ime</label>
-                    <input type="text" id="login-username" required>
+                    <label for="username">Korisničko ime</label>
+                    <input type="text" id="username" required>
                 </div>
                 <div class="form-group">
-                    <label for="login-password">Lozinka</label>
-                    <input type="password" id="login-password" required>
+                    <label for="password">Lozinka</label>
+                    <input type="password" id="password" required>
                 </div>
-                <div class="form-error" id="login-error"></div>
-                <button type="submit" class="btn btn-primary btn-full">Prijavi se</button>
+                <button type="submit" class="btn btn-primary btn-block">Prijavi se</button>
             </form>
-            <p class="modal-footer">
-                Nemaš račun? <a href="#" onclick="showRegister()">Registriraj se</a>
+            <p class="register-link">
+                Nemate račun? <a href="#" id="showRegister">Registrirajte se</a>
             </p>
         </div>
     </div>
 
     <!-- Register Modal -->
-    <div class="modal" id="register-modal">
+    <div id="registerModal" class="modal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('register-modal')">&times;</span>
+            <span class="close">&times;</span>
             <h2>Registracija</h2>
-            <form id="register-form" onsubmit="handleRegister(event)">
+            <form id="registerForm">
                 <div class="form-group">
-                    <label for="register-username">Korisničko ime</label>
-                    <input type="text" id="register-username" required minlength="3">
+                    <label for="regUsername">Korisničko ime</label>
+                    <input type="text" id="regUsername" required>
                 </div>
                 <div class="form-group">
-                    <label for="register-email">Email</label>
-                    <input type="email" id="register-email" required>
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" required>
                 </div>
                 <div class="form-group">
-                    <label for="register-fullname">Ime i prezime</label>
-                    <input type="text" id="register-fullname">
+                    <label for="regPassword">Lozinka</label>
+                    <input type="password" id="regPassword" required minlength="6">
                 </div>
-                <div class="form-group">
-                    <label for="register-password">Lozinka</label>
-                    <input type="password" id="register-password" required minlength="6">
-                </div>
-                <div class="form-error" id="register-error"></div>
-                <button type="submit" class="btn btn-primary btn-full">Registriraj se</button>
+                <button type="submit" class="btn btn-primary btn-block">Registriraj se</button>
             </form>
-            <p class="modal-footer">
-                Već imaš račun? <a href="#" onclick="showLogin()">Prijavi se</a>
+            <p class="register-link">
+                Već imate račun? <a href="#" id="showLogin">Prijavite se</a>
             </p>
         </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div class="toast-container" id="toast-container"></div>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
 
     <script src="app.js"></script>
 </body>

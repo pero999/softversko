@@ -799,18 +799,96 @@ body {
     flex: 1;
 }
 
+/* ============ HAMBURGER MENU ============ */
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 200;
+}
+
+.hamburger span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: translateY(8.5px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-8.5px) rotate(-45deg);
+}
+
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--surface);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    z-index: 150;
+    opacity: 0;
+    transform: translateY(-100%);
+    transition: all 0.4s ease;
+}
+
+.mobile-menu.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mobile-menu .nav-link {
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
+}
+
+.mobile-menu .nav-auth {
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.mobile-menu .btn {
+    font-size: 1.1rem;
+    padding: 0.8rem 2rem;
+}
+
 /* ============ RESPONSIVE ============ */
 
 @media (max-width: 768px) {
-    .navbar {
-        flex-wrap: wrap;
-        gap: 1rem;
+    .hamburger {
+        display: flex;
     }
     
-    .nav-links {
-        order: 3;
-        width: 100%;
-        justify-content: center;
+    .mobile-menu {
+        display: flex;
+    }
+    
+    .nav-links,
+    .nav-auth {
+        display: none;
+    }
+    
+    .navbar {
+        padding: 1rem;
     }
     
     .section-header h1 {
@@ -832,5 +910,22 @@ body {
     
     .form-row {
         flex-direction: column;
+    }
+    
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .cart-count {
+        font-size: 0.75rem;
+    }
+    
+    .admin-menu-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-menu-card {
+        flex-direction: column;
+        gap: 1rem;
     }
 }

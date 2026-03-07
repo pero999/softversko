@@ -56,3 +56,7 @@ data/
 # OS
 .DS_Store
 Thumbs.db
+
+# Firebase
+*-firebase-adminsdk-*.json
+.firebase/

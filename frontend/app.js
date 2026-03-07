@@ -34,9 +34,58 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup navigation
     setupNavigation();
     
+    // Setup hamburger menu
+    setupHamburgerMenu();
+    
     // Set default pickup time (2 hours from now)
     setDefaultPickupTime();
 });
+
+// ============ HAMBURGER MENU ============
+
+function setupHamburgerMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (!hamburger || !mobileMenu) return;
+    
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+    });
+    
+    // Close menu when clicking a link
+    mobileMenu.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+    
+    // Mobile login button
+    const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    if (mobileLoginBtn) {
+        mobileLoginBtn.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+            showLogin();
+        });
+    }
+    
+    // Mobile logout button
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    if (mobileLogoutBtn) {
+        mobileLogoutBtn.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+            logout();
+        });
+    }
+}
 
 function setupNavigation() {
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -182,17 +231,33 @@ function updateAuthUI() {
     const userNameEl = document.getElementById('user-name');
     const adminLink = document.getElementById('admin-link');
     
+    // Mobile elements
+    const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    const mobileAdminLink = document.getElementById('mobileAdminLink');
+    
     if (currentUser) {
-        authEl.style.display = 'none';
-        userEl.style.display = 'flex';
-        userNameEl.textContent = currentUser.full_name || currentUser.username;
+        if (authEl) authEl.style.display = 'none';
+        if (userEl) userEl.style.display = 'flex';
+        if (userNameEl) userNameEl.textContent = currentUser.full_name || currentUser.username;
         
-        if (currentUser.role === 'admin' && adminLink) {
-            adminLink.style.display = 'inline-flex';
+        if (currentUser.role === 'admin') {
+            if (adminLink) adminLink.style.display = 'inline-flex';
+            if (mobileAdminLink) mobileAdminLink.style.display = 'inline-flex';
         }
+        
+        // Mobile
+        if (mobileLoginBtn) mobileLoginBtn.style.display = 'none';
+        if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'inline-flex';
     } else {
-        authEl.style.display = 'flex';
-        userEl.style.display = 'none';
+        if (authEl) authEl.style.display = 'flex';
+        if (userEl) userEl.style.display = 'none';
+        if (adminLink) adminLink.style.display = 'none';
+        
+        // Mobile
+        if (mobileLoginBtn) mobileLoginBtn.style.display = 'inline-flex';
+        if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
+        if (mobileAdminLink) mobileAdminLink.style.display = 'none';
     }
 }
 
@@ -331,12 +396,11 @@ function saveCart() {
 }
 
 function updateCartUI() {
-    // Update cart count
-    const countEl = document.getElementById('cart-count');
-    if (countEl) {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        countEl.textContent = totalItems;
-    }
+    // Update cart count (both desktop and mobile)
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.querySelectorAll('.cart-count').forEach(el => {
+        el.textContent = totalItems;
+    });
     
     // Update cart items
     const cartItemsEl = document.getElementById('cart-items');
@@ -538,6 +602,9 @@ function initAdminPage() {
     loadAdminOrders();
     loadAdminMenu();
     
+    // Setup hamburger menu
+    setupHamburgerMenu();
+    
     // Setup navigation
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', (e) => {
@@ -547,6 +614,15 @@ function initAdminPage() {
             
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
+            
+            // Close mobile menu
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (hamburger && mobileMenu) {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         });
     });
     

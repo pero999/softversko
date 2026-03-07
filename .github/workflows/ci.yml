@@ -1,4 +1,4 @@
-name: CI - Lint & Test
+name: CI/CD - Test & Deploy
 
 on:
   push:
@@ -43,3 +43,21 @@ jobs:
         with:
           file: ./coverage.xml
           fail_ci_if_error: false
+
+  deploy:
+    name: Deploy to Firebase
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: softversko-ff8c4
