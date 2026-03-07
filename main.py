@@ -4,12 +4,15 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import select
 
 from app.config import get_settings
-from app.database import create_db_and_tables
+from app.database import create_db_and_tables, get_session
+from app.models.user import User
 from app.routes.auth import router as auth_router
 from app.routes.menu import router as menu_router
 from app.routes.orders import router as orders_router
+from app.seed import seed_database
 
 settings = get_settings()
 
@@ -19,6 +22,18 @@ async def lifespan(app: FastAPI):
     """Lifecycle eventi aplikacije."""
     # Startup: kreiraj tablice
     create_db_and_tables()
+
+    # Auto-seed ako je baza prazna
+    session = next(get_session())
+    try:
+        existing_user = session.exec(select(User)).first()
+        if existing_user is None:
+            print("Baza je prazna - pokrecem seed...")
+            seed_database()
+            print("Seed zavrsen!")
+    finally:
+        session.close()
+
     yield
     # Shutdown: cleanup ako treba
 
