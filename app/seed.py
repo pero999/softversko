@@ -155,7 +155,7 @@ def seed_database():
             session.add(item)
 
         session.commit()
-        print("✅ Demo podaci uspješno kreirani!")
+        print("Demo podaci uspjesno kreirani!")
         print()
         print("Demo korisnici:")
         print("  👤 Admin:    admin / admin123")

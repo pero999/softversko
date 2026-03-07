@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menza - Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-body">
+    <!-- Navigation -->
+    <nav class="navbar admin-navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">👑</span>
+            <span class="brand-text">Menza Admin</span>
+        </div>
+        <div class="nav-links">
+            <a href="#orders" class="nav-link active" data-section="admin-orders">Narudžbe</a>
+            <a href="#menu" class="nav-link" data-section="admin-menu">Jelovnik</a>
+        </div>
+        <div class="nav-user">
+            <a href="index.html" class="btn btn-outline">← Korisničko sučelje</a>
+            <button class="btn btn-outline" onclick="logout()">Odjava</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content admin-content">
+        <!-- Orders Management Section -->
+        <section id="admin-orders-section" class="section active">
+            <div class="section-header">
+                <h1>📋 Upravljanje Narudžbama</h1>
+                <div class="order-filters">
+                    <button class="filter-btn active" data-status="all">Sve</button>
+                    <button class="filter-btn" data-status="pending">Na čekanju</button>
+                    <button class="filter-btn" data-status="confirmed">Potvrđene</button>
+                    <button class="filter-btn" data-status="ready">Spremne</button>
+                    <button class="filter-btn" data-status="completed">Završene</button>
+                    <button class="filter-btn" data-status="cancelled">Otkazane</button>
+                </div>
+            </div>
+            
+            <div class="admin-orders-list" id="admin-orders-list">
+                <!-- Orders loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- Menu Management Section -->
+        <section id="admin-menu-section" class="section">
+            <div class="section-header">
+                <h1>🍽️ Upravljanje Jelovnikom</h1>
+                <button class="btn btn-primary" onclick="showAddItemModal()">+ Dodaj Artikl</button>
+            </div>
+            
+            <div class="admin-menu-list" id="admin-menu-list">
+                <!-- Menu items loaded dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Add/Edit Item Modal -->
+    <div class="modal" id="item-modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('item-modal')">&times;</span>
+            <h2 id="item-modal-title">Dodaj Artikl</h2>
+            <form id="item-form" onsubmit="handleItemSubmit(event)">
+                <input type="hidden" id="item-id">
+                <div class="form-group">
+                    <label for="item-name">Naziv</label>
+                    <input type="text" id="item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-description">Opis</label>
+                    <textarea id="item-description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="item-price">Cijena (€)</label>
+                        <input type="number" id="item-price" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-category">Kategorija</label>
+                        <select id="item-category">
+                            <option value="Glavna jela">Glavna jela</option>
+                            <option value="Juhe">Juhe</option>
+                            <option value="Salate">Salate</option>
+                            <option value="Deserti">Deserti</option>
+                            <option value="Piće">Piće</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="item-available" checked>
+                        Dostupno
+                    </label>
+                </div>
+                <div class="form-error" id="item-error"></div>
+                <button type="submit" class="btn btn-primary btn-full">Spremi</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check if admin on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+            initAdminPage();
+        });
+    </script>
+</body>
+</html>

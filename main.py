@@ -3,6 +3,8 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.database import create_db_and_tables
@@ -22,6 +24,7 @@ async def lifespan(app: FastAPI):
     # Shutdown: cleanup ako treba
 
 
+# CORS - dozvoli frontend pristup
 app = FastAPI(
     title="Menza API",
     description="""
@@ -39,6 +42,15 @@ app = FastAPI(
     """,
     version="1.0.0",
     lifespan=lifespan,
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Uključi rute
