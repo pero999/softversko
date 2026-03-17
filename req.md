@@ -9,7 +9,7 @@
 ## GitHub repozitorij
 - Link: https://github.com/pero999/softversko/new/main
 - Svi članovi dodani: DA
-- 
+  
 ## User storyji
 US-01 Kao student, želim pregledati jelovnik i biti u mogućnosti rezervirati jelo za sljedeći dan.
 US-02 Kao administrator, želim pregledati sve
