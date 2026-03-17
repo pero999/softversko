@@ -20,13 +20,9 @@ a administratorima upravljanje jelovnikom (CRUD), postavljanje procijenjenog vre
 
 ## User storyji
 
-**US-01** Kao student FESB-a, želim se registrirati u sustav menze sa svojim korisničkim imenom i lozinkom, pregledati dnevni jelovnik s cijenama i kategorijama jela (glavna jela, prilozi, deserti, piće), odabrati željene artikle s količinama, te kreirati narudžbu i dobiti procjenu vremena kada će hrana biti gotova, kako bih znao kada mogu doći u menzu po hranu bez čekanja.
+**US-01** Kao student, želim pregledati jelovnik i kreirati narudžbu, kako bih mogao naručiti hranu i dobiti procjenu vremena kada će biti gotova.
 
-**Scenarij:** Student Marko ima pauzu između predavanja. U 11:30 otvara aplikaciju, pregledava jelovnik, naručuje ćevape s pomfritom i sok. Sustav mu prikazuje potvrdu narudžbe sa statusom "zaprimljena". Administrator menze zaprima narudžbu i postavlja procijenjeno vrijeme gotovosti na 12:15. Marko u aplikaciji vidi da je procijenjeno vrijeme 12:15. U 12:10 dobiva obavijest da je narudžba spremna. Dolazi u menzu, pokazuje broj narudžbe i preuzima hranu.
-
-**US-02** Kao djelatnik menze (administrator), želim se prijaviti u sustav s admin računom, dodavati nove artikle na jelovnik (naziv, cijena, kategorija), ažurirati cijene ili označiti artikle kao nedostupne kada ponestane namirnica, te pratiti sve pristigle narudžbe, postavljati procijenjeno vrijeme gotovosti i mijenjati status narudžbe (zaprimljena → u pripremi → spremna → preuzeta) kako bih mogao organizirati rad kuhinje i informirati studente kada mogu doći po hranu.
-
-**Scenarij:** Djelatnica Ana ujutro dodaje dnevnu ponudu na jelovnik: grah s kobasicom (4.50€), pileći odrezak (5.00€), salata (2.00€). Tijekom dana vidi da je stigla nova narudžba od studenta Marka. Pregledava narudžbu, procjenjuje da će jelo biti gotovo za 45 minuta i postavlja procijenjeno vrijeme na 12:15. Označava narudžbu kao "u pripremi". Kada je narudžba gotova, označava je kao "spremna" - student automatski dobiva obavijest. Kada student preuzme hranu, označava "preuzeto".
+**US-02** Kao administrator, želim upravljati jelovnikom i narudžbama, kako bih mogao organizirati pripremu hrane i informirati studente o vremenu gotovosti.
 
 ---
 
