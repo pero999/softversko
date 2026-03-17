@@ -2,8 +2,8 @@
 
 ## Opis projekta
 Sustav narudžbi za menzu/kuhinju - FastAPI REST API s autentikacijom, jelovnikom i narudžbama.
-Aplikacija omogućuje korisnicima pregledavanje jelovnika i kreiranje narudžbi s vremenom preuzimanja,
-a administratorima upravljanje jelovnikom (CRUD) i pregled svih narudžbi.
+Aplikacija omogućuje korisnicima pregledavanje jelovnika i kreiranje narudžbi,
+a administratorima upravljanje jelovnikom (CRUD), postavljanje procijenjenog vremena gotovosti narudžbi i praćenje statusa.
 
 ## Članovi tima
 - Petar
@@ -20,9 +20,13 @@ a administratorima upravljanje jelovnikom (CRUD) i pregled svih narudžbi.
 
 ## User storyji
 
-**US-01** Kao student, želim pregledati jelovnik menze i kreirati narudžbu s odabranim vremenom preuzimanja, kako bih izbjegao čekanje u redu i stigao na vrijeme na predavanje.
+**US-01** Kao student FESB-a, želim se registrirati u sustav menze sa svojim korisničkim imenom i lozinkom, pregledati dnevni jelovnik s cijenama i kategorijama jela (glavna jela, prilozi, deserti, piće), odabrati željene artikle s količinama, te kreirati narudžbu i dobiti procjenu vremena kada će hrana biti gotova, kako bih znao kada mogu doći u menzu po hranu bez čekanja.
 
-**US-02** Kao administrator menze, želim upravljati artiklima na jelovniku i pratiti sve narudžbe, kako bih mogao organizirati pripremu hrane i osigurati da narudžbe budu spremne na vrijeme.
+**Scenarij:** Student Marko ima pauzu između predavanja. U 11:30 otvara aplikaciju, pregledava jelovnik, naručuje ćevape s pomfritom i sok. Sustav mu prikazuje potvrdu narudžbe sa statusom "zaprimljena". Administrator menze zaprima narudžbu i postavlja procijenjeno vrijeme gotovosti na 12:15. Marko u aplikaciji vidi da je procijenjeno vrijeme 12:15. U 12:10 dobiva obavijest da je narudžba spremna. Dolazi u menzu, pokazuje broj narudžbe i preuzima hranu.
+
+**US-02** Kao djelatnik menze (administrator), želim se prijaviti u sustav s admin računom, dodavati nove artikle na jelovnik (naziv, cijena, kategorija), ažurirati cijene ili označiti artikle kao nedostupne kada ponestane namirnica, te pratiti sve pristigle narudžbe, postavljati procijenjeno vrijeme gotovosti i mijenjati status narudžbe (zaprimljena → u pripremi → spremna → preuzeta) kako bih mogao organizirati rad kuhinje i informirati studente kada mogu doći po hranu.
+
+**Scenarij:** Djelatnica Ana ujutro dodaje dnevnu ponudu na jelovnik: grah s kobasicom (4.50€), pileći odrezak (5.00€), salata (2.00€). Tijekom dana vidi da je stigla nova narudžba od studenta Marka. Pregledava narudžbu, procjenjuje da će jelo biti gotovo za 45 minuta i postavlja procijenjeno vrijeme na 12:15. Označava narudžbu kao "u pripremi". Kada je narudžba gotova, označava je kao "spremna" - student automatski dobiva obavijest. Kada student preuzme hranu, označava "preuzeto".
 
 ---
 
@@ -52,21 +56,21 @@ a administratorima upravljanje jelovnikom (CRUD) i pregled svih narudžbi.
 - Prioritet: Srednji
 - Kriterij prihvaćanja: Admin može obrisati artikl; artikl više nije vidljiv na jelovniku.
 
-**FZ-07** Sustav mora omogućiti prijavljenom korisniku kreiranje narudžbe s odabranim artiklima, količinama i vremenom preuzimanja.
+**FZ-07** Sustav mora omogućiti prijavljenom korisniku kreiranje narudžbe s odabranim artiklima i količinama.
 - Prioritet: Visok
-- Kriterij prihvaćanja: Narudžba se sprema s listom artikala, količinama, pickup_time i ukupnom cijenom.
+- Kriterij prihvaćanja: Narudžba se sprema s listom artikala, količinama, ukupnom cijenom i početnim statusom "pending".
 
-**FZ-08** Sustav mora omogućiti korisniku pregled vlastitih narudžbi i njihovih statusa.
+**FZ-08** Sustav mora omogućiti korisniku pregled vlastitih narudžbi, statusa i procijenjenog vremena gotovosti.
 - Prioritet: Visok
-- Kriterij prihvaćanja: Korisnik vidi samo svoje narudžbe sa statusom (pending, preparing, ready, completed).
+- Kriterij prihvaćanja: Korisnik vidi samo svoje narudžbe sa statusom (pending, preparing, ready, completed) i procijenjenim vremenom koje je postavio admin.
 
 **FZ-09** Sustav mora omogućiti korisniku otkazivanje vlastite narudžbe koja još nije u pripremi.
 - Prioritet: Srednji
 - Kriterij prihvaćanja: Korisnik može otkazati narudžbu sa statusom "pending"; narudžbe u pripremi se ne mogu otkazati.
 
-**FZ-10** Sustav mora omogućiti administratoru pregled svih narudžbi i promjenu njihovog statusa.
+**FZ-10** Sustav mora omogućiti administratoru pregled svih narudžbi, postavljanje procijenjenog vremena gotovosti i promjenu statusa.
 - Prioritet: Visok
-- Kriterij prihvaćanja: Admin vidi sve narudžbe svih korisnika i može promijeniti status iz pending u preparing, ready ili completed.
+- Kriterij prihvaćanja: Admin vidi sve narudžbe svih korisnika, može postaviti estimated_time (procijenjeno vrijeme kada će narudžba biti gotova) i promijeniti status iz pending u preparing, ready ili completed.
 
 ---
 
@@ -124,9 +128,9 @@ a administratorima upravljanje jelovnikom (CRUD) i pregled svih narudžbi.
 - Povezan sa: FZ-08, FZ-09
 - Datoteke: `app/routes/orders.py` - GET `/api/v1/orders/my`, DELETE `/api/v1/orders/my/{id}`
 
-**TASK-08** Implementirati admin funkcionalnosti za pregled svih narudžbi i promjenu statusa
+**TASK-08** Implementirati admin funkcionalnosti za pregled narudžbi, postavljanje procijenjenog vremena i promjenu statusa
 - Povezan sa: FZ-10
-- Datoteke: `app/routes/orders.py` - GET `/api/v1/orders/`, PATCH `/api/v1/orders/{id}/status`
+- Datoteke: `app/routes/orders.py` - GET `/api/v1/orders/`, PATCH `/api/v1/orders/{id}/status`, PATCH `/api/v1/orders/{id}/estimated-time`
 
 **TASK-09** Napisati unit testove za autentikaciju, modele i validacije
 - Povezan sa: NZ-03
@@ -203,12 +207,13 @@ a administratorima upravljanje jelovnikom (CRUD) i pregled svih narudžbi.
 | DELETE | `/{id}`  | Obriši artikl     | Admin  |
 
 ### Narudžbe (`/api/v1/orders`)
-| Metoda | Endpoint       | Opis                    | Auth  |
-|--------|----------------|-------------------------|-------|
-| POST   | `/`            | Kreiraj novu narudžbu   | User  |
-| GET    | `/my`          | Dohvati moje narudžbe   | User  |
-| GET    | `/my/{id}`     | Dohvati moju narudžbu   | User  |
-| DELETE | `/my/{id}`     | Otkaži moju narudžbu    | User  |
-| GET    | `/`            | Dohvati sve narudžbe    | Admin |
-| GET    | `/{id}`        | Dohvati narudžbu po ID  | Admin |
-| PATCH  | `/{id}/status` | Promijeni status narudžbe | Admin |
+| Metoda | Endpoint              | Opis                              | Auth  |
+|--------|-----------------------|-----------------------------------|-------|
+| POST   | `/`                   | Kreiraj novu narudžbu             | User  |
+| GET    | `/my`                 | Dohvati moje narudžbe             | User  |
+| GET    | `/my/{id}`            | Dohvati moju narudžbu             | User  |
+| DELETE | `/my/{id}`            | Otkaži moju narudžbu              | User  |
+| GET    | `/`                   | Dohvati sve narudžbe              | Admin |
+| GET    | `/{id}`               | Dohvati narudžbu po ID            | Admin |
+| PATCH  | `/{id}/status`        | Promijeni status narudžbe         | Admin |
+| PATCH  | `/{id}/estimated-time`| Postavi procijenjeno vrijeme gotovosti | Admin |
