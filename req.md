@@ -31,6 +31,7 @@ NZ-01 Sustav mora vratiti popis jela u roku od 4 sekunde za 95% zahtjeva.
 NZ-02 Sustav mora bilježiti greške pri neuspjeloj rezervaciji(npr ako je prijeđena dostupna količina).
 NZ-03 Sustav mora u roku od 2 sekunde promjeniti temu stranice na zahtjev.
 NZ-04 Sustav mora omogućiti rezervaciju obroka u manje od 6 koraka. 
+NZ-05 Sustav napravljen u obliku mikroservisa i containeri
 
 
 ## Taskovi
