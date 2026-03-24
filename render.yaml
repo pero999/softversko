@@ -1,0 +1,17 @@
+# Render Blueprint - Auto deploy configuration
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Backend API
+  - type: web
+    name: menza-api
+    runtime: docker
+    repo: https://github.com/pero999/softversko
+    branch: main
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///./data/menza.db
