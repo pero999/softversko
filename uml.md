@@ -62,8 +62,48 @@ CLASS DIJAGRAM
 Klase korisnik, admin, obrok i narudžba
 Atribut: korisnik: ime, prezime, korisnik_id
          admin: admin_id, ime, prezime, razina_ovlasti
-         obrok: obrok_id, naziv, opis, cijena, dostupnost
+         obrok: obrok_id, naziv, opis, cijena, dostupnost, kolicina
          narudžba: narudžba_id, korisnik_id, ukupni_iznos, vrijeme_narucivanja
-Jedna narudžba 
+Admin može deaktivirati barem jednog korisnika. Korisnik može napraviti jednu ili više narudžbi. Narudžba sadrži barem jedan obrok. Obrok može ili ne mora biti stavka u narudžbi. 
+@startuml
+left to right direction
+class Korisnik{
+- ime : String
+- prezime : String
+- korisnik_id : int
++ naruci_obrok()
++ otkazi_obrok()
+}
+
+class Admin{
+- admin_id : int
+- ime : String
+- prezime : String
+- razina_ovlasti : String
++ dodaj_obrok()
++ ukloni_obrok()
++ azuriraj_dostupnost()
+}
+
+class Obrok {
+- obrok_id : int
+- naziv : String
+- opis : String
+- cijena : Decimal
+- dostupnost : Bull
+- kolicina : int
+}
+
+class Narudžba {
+- narudba_id : int
+- korisnik_id : int
+- ukupni_iznos : Decimal
+- vrijeme_narucivanja : DateTime
+}
+
+Korisnik "1" --> "0..*" Narudžba : kreira
+Narudžba "1" *-- "1..*" Obrok : sadrži
+Obrok "1" --> "0..*" Narudžba : je_stavka_u
+Admin "1" --> "1..*" Korisnik : deaktivira
 
 
