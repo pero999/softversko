@@ -1,0 +1,38 @@
+﻿@startuml
+left to right direction
+
+actor "Korisnik" as User
+actor "Administrator" as Admin
+
+rectangle "Menza API Sustav" {
+  usecase "Registracija" as UC_Register
+  usecase "Prijava" as UC_Login
+  usecase "Autentikacija" as UC_Auth
+  usecase "Pregled jelovnika" as UC_ViewMenu
+  usecase "Kreiranje narudžbe" as UC_CreateOrder
+  usecase "Pregled mojih narudžbi" as UC_MyOrders
+  usecase "Otkazivanje narudžbe" as UC_CancelOrder
+  usecase "Upravljanje jelovnikom\n(CRUD)" as UC_MenuCRUD
+  usecase "Pregled svih narudžbi" as UC_AllOrders
+  usecase "Promjena statusa narudžbe" as UC_UpdateStatus
+}
+
+User -- UC_Register
+User -- UC_Login
+User -- UC_ViewMenu
+User -- UC_CreateOrder
+User -- UC_MyOrders
+User -- UC_CancelOrder
+
+Admin -- UC_Login
+Admin -- UC_MenuCRUD
+Admin -- UC_AllOrders
+Admin -- UC_UpdateStatus
+
+UC_CreateOrder ..> UC_Auth : <<include>>
+UC_MyOrders ..> UC_Auth : <<include>>
+UC_MenuCRUD ..> UC_Auth : <<include>>
+UC_AllOrders ..> UC_Auth : <<include>>
+UC_UpdateStatus ..> UC_Auth : <<include>>
+UC_CancelOrder ..> UC_CreateOrder : <<extend>>
+@enduml

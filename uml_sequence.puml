@@ -1,0 +1,29 @@
+﻿@startuml
+actor Korisnik
+participant "API /orders" as API
+participant "Auth (JWT)" as Auth
+database "SQLite baza" as DB
+
+Korisnik -> API : POST /api/v1/orders (pickup_time, items)
+API -> Auth : validiraj token
+Auth --> API : korisnik autoriziran
+
+API -> API : validiraj pickup_time > now
+alt neispravno vrijeme
+  API --> Korisnik : 400 Bad Request
+else vrijeme je valjano
+  loop za svaku stavku narudžbe
+    API -> DB : dohvati MenuItem(menu_item_id)
+    alt artikl ne postoji ili nije dostupan
+      API --> Korisnik : 404/400 greška
+    else artikl valjan
+      API -> API : izračunaj item_total i total_price
+    end
+  end
+
+  API -> DB : insert Order(status=pending, total_price)
+  API -> DB : insert OrderItem(...)
+  DB --> API : spremljeno
+  API --> Korisnik : 201 Created + OrderRead
+end
+@enduml

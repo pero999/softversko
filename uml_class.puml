@@ -1,0 +1,64 @@
+﻿@startuml
+
+enum UserRole {
+  user
+  admin
+}
+
+enum OrderStatus {
+  pending
+  confirmed
+  ready
+  completed
+  cancelled
+}
+
+class User {
+  +id: int
+  +username: str
+  +email: str
+  +full_name: str?
+  +hashed_password: str
+  +is_active: bool
+  +role: UserRole
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class MenuItem {
+  +id: int
+  +name: str
+  +description: str?
+  +price: Decimal
+  +is_available: bool
+  +category: str?
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class Order {
+  +id: int
+  +user_id: int
+  +pickup_time: datetime
+  +note: str?
+  +status: OrderStatus
+  +total_price: Decimal
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class OrderItem {
+  +id: int
+  +order_id: int
+  +menu_item_id: int
+  +quantity: int
+  +unit_price: Decimal
+}
+
+User "1" --> "0..*" Order : kreira
+Order "1" *-- "1..*" OrderItem : sadrži
+MenuItem "1" --> "0..*" OrderItem : je_stavka_u
+User --> UserRole
+Order --> OrderStatus
+
+@enduml
