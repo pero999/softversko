@@ -58,6 +58,35 @@ else Nema dovoljno sredstava
 end
 @enduml
 
+Scenarij: pregledavanje rezervacija 
+1. Prijava 2. Provjerava podatke 3. Dohvaća rezervacije 4. Provjerava je li prijava ispravna 4.1 Ako je prijava točna vrati rezervacije 4.2 Ako je netočna odbij zahtjev 5. Prikaži rezervacije
+
+@startuml
+actor Administrator 
+participant UI as "Web Aplikacija"
+participant API as "Server / API"
+database DB as "Baza"
+
+Administrator -> UI : prijava()
+activate UI
+UI -> API : provjeriPodatke()
+activate API
+API -> DB : dohvatiRezervacije()
+activate DB
+DB --> API : rezervacije()
+deactivate DB
+
+alt tocna prijava
+API --> UI : vratiRezervacije
+else netocna prijava 
+API --> UI : odbijZahtjev
+end
+
+UI --> Administrator : rezervacije
+deactivate API 
+deactivate UI
+@enduml
+
 CLASS DIJAGRAM
 Klase korisnik, admin, obrok i narudžba
 Atribut: korisnik: ime, prezime, korisnik_id
