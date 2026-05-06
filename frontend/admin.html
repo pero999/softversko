@@ -20,10 +20,11 @@
             <a href="#menu" class="nav-link" data-section="admin-menu">Jelovnik</a>
         </div>
         <div class="nav-user">
+            <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" title="Promijeni temu">🌙</button>
             <a href="/" class="btn btn-outline">← Korisničko sučelje</a>
             <button class="btn btn-outline" onclick="logout()">Odjava</button>
         </div>
-        
+
         <!-- Hamburger Menu -->
         <div class="hamburger" id="hamburger">
             <span></span>
@@ -32,7 +33,6 @@
         </div>
     </nav>
     
-    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <a href="#orders" class="nav-link" data-section="admin-orders">Narudžbe</a>
         <a href="#menu" class="nav-link" data-section="admin-menu">Jelovnik</a>
@@ -42,9 +42,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <main class="main-content admin-content">
-        <!-- Orders Management Section -->
         <section id="admin-orders-section" class="section active">
             <div class="section-header">
                 <h1>📋 Upravljanje Narudžbama</h1>
