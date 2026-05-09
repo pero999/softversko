@@ -22,6 +22,8 @@
                 Košarica <span class="cart-count">0</span>
             </a>
         </div>
+        <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" title="Promijeni temu">🌙</button>
+
         <div id="nav-auth" class="nav-auth">
             <button onclick="showLogin()" class="btn btn-outline">Prijava</button>
         </div>
@@ -30,8 +32,7 @@
             <a href="admin.html" id="admin-link" class="btn btn-admin" style="display: none;">Admin</a>
             <button onclick="logout()" class="btn btn-outline">Odjava</button>
         </div>
-        
-        <!-- Hamburger Menu -->
+
         <div class="hamburger" id="hamburger">
             <span></span>
             <span></span>
@@ -39,7 +40,6 @@
         </div>
     </nav>
     
-    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <a href="#menu" class="nav-link" data-section="menu">Jelovnik</a>
         <a href="#orders" class="nav-link" data-section="orders">Moje Narudžbe</a>
@@ -66,11 +66,9 @@
             </div>
             
             <div id="menu-grid" class="menu-grid">
-                <!-- Menu items loaded dynamically -->
             </div>
         </section>
 
-        <!-- Orders Section -->
         <section id="orders-section" class="section">
             <div class="section-header">
                 <h1>Moje Narudžbe</h1>

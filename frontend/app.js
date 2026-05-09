@@ -1,19 +1,12 @@
-// ============================================
-// MENZA - Frontend Application
-// ============================================
-
-// API URL - koristi relativan path kad je na istom originu
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://127.0.0.1:8000/api/v1'
     : '/api/v1';
 
-// State
 let cart = [];
 let menuItems = [];
 let currentUser = null;
 let token = null;
 
-// ============ INITIALIZATION ============
 
 document.addEventListener('DOMContentLoaded', () => {
     // Load saved auth
@@ -23,28 +16,46 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser = JSON.parse(savedUser);
         updateAuthUI();
     }
-    
-    // Load menu
+
     loadMenu();
-    
-    // Load cart from localStorage
+
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
         cart = JSON.parse(savedCart);
         updateCartUI();
     }
-    
-    // Setup navigation
+
     setupNavigation();
-    
-    // Setup hamburger menu
+
     setupHamburgerMenu();
-    
-    // Set default pickup time (2 hours from now)
+
     setDefaultPickupTime();
+
+    applySavedTheme();
 });
 
-// ============ HAMBURGER MENU ============
+
+function applySavedTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        updateThemeToggleIcon(true);
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-theme');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateThemeToggleIcon(isDark);
+}
+
+function updateThemeToggleIcon(isDark) {
+    document.querySelectorAll('#theme-toggle').forEach(btn => {
+        btn.textContent = isDark ? '☀️' : '🌙';
+        btn.title = isDark ? 'Prebaci na svijetlu temu' : 'Prebaci na tamnu temu';
+    });
+}
+
 
 function setupHamburgerMenu() {
     const hamburger = document.getElementById('hamburger');
@@ -58,7 +69,6 @@ function setupHamburgerMenu() {
         document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
     });
     
-    // Close menu when clicking a link
     mobileMenu.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
             hamburger.classList.remove('active');
@@ -67,7 +77,6 @@ function setupHamburgerMenu() {
         });
     });
     
-    // Mobile login button
     const mobileLoginBtn = document.getElementById('mobileLoginBtn');
     if (mobileLoginBtn) {
         mobileLoginBtn.addEventListener('click', () => {
@@ -78,7 +87,6 @@ function setupHamburgerMenu() {
         });
     }
     
-    // Mobile logout button
     const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
     if (mobileLogoutBtn) {
         mobileLogoutBtn.addEventListener('click', () => {
@@ -111,13 +119,10 @@ function showSection(sectionName) {
         section.classList.add('active');
     }
     
-    // Load data for specific sections
     if (sectionName === 'orders' && currentUser) {
         loadMyOrders();
     }
 }
-
-// ============ AUTH ============
 
 function showLogin() {
     closeModal('register-modal');
@@ -161,13 +166,11 @@ async function handleLogin(e) {
         token = data.access_token;
         localStorage.setItem('token', token);
         
-        // Get user info
         await fetchCurrentUser();
         
         closeModal('login-modal');
         showToast('Uspješna prijava!', 'success');
         
-        // Refresh orders if on that section
         if (document.getElementById('orders-section').classList.contains('active')) {
             loadMyOrders();
         }
@@ -234,7 +237,6 @@ function updateAuthUI() {
     const userNameEl = document.getElementById('user-name');
     const adminLink = document.getElementById('admin-link');
     
-    // Mobile elements
     const mobileLoginBtn = document.getElementById('mobileLoginBtn');
     const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
     const mobileAdminLink = document.getElementById('mobileAdminLink');
@@ -249,7 +251,6 @@ function updateAuthUI() {
             if (mobileAdminLink) mobileAdminLink.style.display = 'inline-flex';
         }
         
-        // Mobile
         if (mobileLoginBtn) mobileLoginBtn.style.display = 'none';
         if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'inline-flex';
     } else {
@@ -257,7 +258,6 @@ function updateAuthUI() {
         if (userEl) userEl.style.display = 'none';
         if (adminLink) adminLink.style.display = 'none';
         
-        // Mobile
         if (mobileLoginBtn) mobileLoginBtn.style.display = 'inline-flex';
         if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
         if (mobileAdminLink) mobileAdminLink.style.display = 'none';
@@ -272,13 +272,10 @@ function logout() {
     updateAuthUI();
     showToast('Odjavljen/a', 'success');
     
-    // Redirect to home if on admin page
     if (window.location.pathname.includes('admin')) {
         window.location.href = '/';
     }
 }
-
-// ============ MENU ============
 
 async function loadMenu() {
     try {
@@ -352,8 +349,6 @@ function renderCategoryFilters() {
     });
 }
 
-// ============ CART ============
-
 function addToCart(itemId) {
     const item = menuItems.find(i => i.id === itemId);
     if (!item || !item.is_available) return;
@@ -399,13 +394,11 @@ function saveCart() {
 }
 
 function updateCartUI() {
-    // Update cart count (both desktop and mobile)
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     document.querySelectorAll('.cart-count').forEach(el => {
         el.textContent = totalItems;
     });
     
-    // Update cart items
     const cartItemsEl = document.getElementById('cart-items');
     const cartSummaryEl = document.getElementById('cart-summary');
     
@@ -433,7 +426,6 @@ function updateCartUI() {
         </div>
     `).join('');
     
-    // Update total
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const totalEl = document.getElementById('total-price');
     if (totalEl) totalEl.textContent = `${total.toFixed(2)} €`;
@@ -503,22 +495,18 @@ async function submitOrder() {
             throw new Error(error.detail || 'Greška pri naručivanju');
         }
         
-        // Clear cart
         cart = [];
         saveCart();
         updateCartUI();
         
-        showToast('Narudžba uspješno poslana! 🎉', 'success');
+        showToast('Narudžba uspješno poslana!', 'success');
         
-        // Go to orders
         document.querySelector('[data-section="orders"]').click();
         
     } catch (error) {
         showToast(error.message, 'error');
     }
 }
-
-// ============ ORDERS ============
 
 async function loadMyOrders() {
     const container = document.getElementById('orders-list');
@@ -599,16 +587,12 @@ function renderOrders(orders, container, isAdmin = false) {
     `).join('');
 }
 
-// ============ ADMIN ============
-
 function initAdminPage() {
     loadAdminOrders();
     loadAdminMenu();
     
-    // Setup hamburger menu
     setupHamburgerMenu();
-    
-    // Setup navigation
+
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -618,7 +602,6 @@ function initAdminPage() {
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
             
-            // Close mobile menu
             const hamburger = document.getElementById('hamburger');
             const mobileMenu = document.getElementById('mobileMenu');
             if (hamburger && mobileMenu) {
@@ -629,7 +612,6 @@ function initAdminPage() {
         });
     });
     
-    // Setup order filters
     document.querySelectorAll('.order-filters .filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.order-filters .filter-btn').forEach(b => b.classList.remove('active'));
@@ -711,7 +693,6 @@ async function loadAdminMenu() {
             </div>
         `).join('');
         
-        // Store for editing
         menuItems = items;
         
     } catch (error) {
@@ -799,8 +780,6 @@ async function deleteItem(itemId) {
     }
 }
 
-// ============ UTILITIES ============
-
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleString('hr-HR', {
@@ -836,7 +815,6 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// Close modals on outside click
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
         e.target.classList.remove('active');
